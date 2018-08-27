@@ -1,0 +1,143 @@
+
+
+#include <LiquidCrystal.h>
+//Keyboard Controls:
+//
+// C - Clockwise
+// S - Stop
+// A - Anti-clockwise
+
+// Declare L298N Controller pins
+// Motor 1
+int count=255;
+int dir1PinA = 2;
+int dir2PinA = 5;
+int speedPinA = 6; // PWM control
+LiquidCrystal lcd(8, 9, 10, 11, 12, 13);
+
+void setup() { 
+ 
+Serial.begin(9600); // baud rate
+
+lcd.begin(20, 4);
+lcd.setCursor(5,0);
+lcd.print("DC Motor");
+lcd.setCursor(5,1);
+lcd.print("Direction");
+lcd.setCursor(5,2);
+lcd.print("Control");
+lcd.setCursor(2,3);
+lcd.print("via Arduino UNO");
+
+delay(3000);
+
+lcd.clear ();
+
+lcd.setCursor(0,2);
+lcd.print("www.TheEngineering");
+lcd.setCursor(4,3);
+lcd.print("Projects.com");
+//Define L298N Dual H-Bridge Motor Controller Pins
+
+pinMode(dir1PinA,OUTPUT);
+pinMode(dir2PinA,OUTPUT);
+pinMode(speedPinA,OUTPUT);
+
+analogWrite(speedPinA, 255);//Sets speed variable via PWM 
+
+}
+
+void loop() {
+
+// Initialize the Serial interface:
+
+if (Serial.available() > 0) {
+int inByte = Serial.read();
+int speed; // Local variable
+
+switch (inByte) {
+
+case 'C': // Clockwise rotation
+//analogWrite(speedPinA, 255);//Sets speed variable via PWM 
+digitalWrite(dir1PinA, LOW);
+digitalWrite(dir2PinA, HIGH);
+Serial.println("Clockwise rotation"); // Prints out “Motor 1 Forward” on the serial monitor
+Serial.println("   "); // Creates a blank line printed on the serial monitor
+//lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Clockwise rotation");
+break;
+
+case 'S': // No rotation
+//analogWrite(speedPinA, 0); // 0 PWM (Speed)
+digitalWrite(dir1PinA, LOW);
+digitalWrite(dir2PinA, LOW);
+Serial.println("No rotation");
+Serial.println("   ");
+//lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("No rotation");
+break;
+
+case 'H': //Accelrating motor
+count=count+20;
+  if (count>255)
+  {
+  count =255;
+  }
+  analogWrite(speedPinA,count);
+  delay(50);
+
+//digitalWrite(dir1PinA, LOW);
+//digitalWrite(dir2PinA, HIGH);
+Serial.println("Motor is accelrating slowly");
+Serial.println("   ");
+Serial.println(count);
+lcd.setCursor(0,0);
+lcd.print("Motor is accelrating");
+break;
+
+case 'L': //Deaccelrating motor
+count=count-20;
+  if (count<20)
+  {
+  count=20;
+  }
+  analogWrite(speedPinA,count);
+  delay(50);
+
+//digitalWrite(dir1PinA, LOW);
+//digitalWrite(dir2PinA, HIGH);
+Serial.println("Motor is deaccelrating slowly");
+Serial.println("   ");
+Serial.println(count);
+lcd.setCursor(0,0);
+lcd.print("Motor Deaccelrates");
+break;
+
+case 'A': // Anti-clockwise rotation
+//analogWrite(speedPinA, 255); // Maximum PWM (speed)
+digitalWrite(dir1PinA, HIGH);
+digitalWrite(dir2PinA, LOW);
+Serial.println("Anti-clockwise rotation");
+Serial.println("   ");
+//lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Anti-clockwise");
+break;
+
+default:
+// Turn off the motor if any other key is being pressed
+for (int thisPin = 2; thisPin < 11; thisPin++) {
+digitalWrite(thisPin, LOW);
+}
+Serial.println("Wrong key is pressed");
+//lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Wrong key is pressed");
+  }
+    }
+      }
+
+
+      
