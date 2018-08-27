@@ -1,2 +1,1 @@
-# trav-tech
-arduino alcohol detectors
+team TravTech
